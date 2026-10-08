@@ -2,6 +2,9 @@ name: GITHUB_TOKEN Demo
 
 on:
   push:
+permissions:
+  contents: read
+    
 
 jobs:
   token-demo:
