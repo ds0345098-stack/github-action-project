@@ -1,21 +1,21 @@
-name: GITHUB_TOKEN Demo
+name: GITHUB_TOKEN Permissions Demo
 
 on:
   push:
+
 permissions:
   contents: read
-    
+  issues: write
 
 jobs:
-  token-demo:
+  permission-demo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Show token information
+      - name: Create an issue
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo "GITHUB_TOKEN exists:"
-          if [ -n "${{ github.token }}" ]; then
-            echo "YES"
-          else
-            echo "NO"
-          fi
+          gh issue create \
+            --title "Issue created by GitHub Actions" \
+            --body "This issue was created by GITHUB_TOKEN."
