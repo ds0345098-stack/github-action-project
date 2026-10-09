@@ -1,44 +1,20 @@
-name: Permission Scope Demo
-
+name: Read demo secret
 on:
-  push:
-
+ push:
+  branches:
+    - main
 permissions:
   contents: read
-
+          
 jobs:
-  read-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Read repository
-        uses: actions/checkout@v4
-
-      - name: Show read job
-        run: echo "Read job succeeded"
-
-  check-repo-details:
-    runs-on: ubuntu-latest
-    permissions:
-       contents: read
-       issues: write
-      
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: get repository details
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-         count=$(gh api "repos/${{ github.repository }}/issues?state=open&labels=bug" \
-          --jq '[.[] | select(.pull_request == null)] | length')
-         echo "Number of open issues: $count"
-            if [ "$count" -eq 0 ]; then
-              gh api \
-                 --method POST \
-                 "repos/${{ github.repository }}/issues" \
-                -f title="automated bug report" \
-                -f body="created by github action because there is no open bug report" \
-                -f 'labels[]=bug'
-            else
-              echo "An open bug report already exists."
-            fi
+   read-job:
+       runs-on: ubuntu-latest
+       steps: 
+          - name: Checkout code
+            uses: actions/checkout@v4
+          - name: Read demo secret
+            env:
+              DEMO_SECRET: ${{ secrets.DEMO_SECRET }}
+            run: |
+              echo "The secret was passed to this step."
+              echo "Secret is configured: $([ -n "$DEMO_SECRET" ] && echo "yes" || echo "no")"
