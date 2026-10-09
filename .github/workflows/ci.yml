@@ -18,6 +18,7 @@ jobs:
 
   issue-job:
     runs-on: ubuntu-latest
+    needs: read-job
 
     permissions:
       contents: read
@@ -33,3 +34,27 @@ jobs:
           gh issue create \
             --title "Job-level permission test" \
             --body "This issue tests job-level permissions."
+  deploy:
+    runs-on: ubuntu-latest
+    needs: issue-job
+
+    permissions:
+      contents: read
+      issues: write
+      deployments: write
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create a deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/deployments \
+            -f ref=main 
+            -f environment=production \
+            -f description="Job-level permission test deployment"   
+           
