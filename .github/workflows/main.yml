@@ -1,0 +1,13 @@
+
+name: Main Deployment Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-dev:
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environment: dev
