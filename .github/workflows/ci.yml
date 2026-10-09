@@ -34,7 +34,6 @@ jobs:
          echo "Number of open issues: $count"
             if [ "$count" -eq 0 ]; then
               gh api \
-                
                  --method POST \
                  "repos/${{ github.repository }}/issues" \
                 -f title="automated bug report" \
