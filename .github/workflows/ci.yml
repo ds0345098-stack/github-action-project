@@ -54,7 +54,7 @@ jobs:
             --method POST \
             -H "Accept: application/vnd.github+json" \
             /repos/${{ github.repository }}/deployments \
-            -f ref=main 
+            -f ref=main \
             -f environment=production \
             -f description="Job-level permission test deployment"   
            
