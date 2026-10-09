@@ -1,20 +1,29 @@
-name: Read demo secret
+name: Environment Secret Demo
+
 on:
- push:
-  branches:
-    - main
+  push:
+    branches:
+      - main
+
 permissions:
   contents: read
-          
+
 jobs:
-   read-job:
-       runs-on: ubuntu-latest
-       steps: 
-          - name: Checkout code
-            uses: actions/checkout@v4
-          - name: Read demo secret
-            env:
-              DEMO_SECRET: ${{ secrets.DEMO_SECRET }}
-            run: |
-              echo "The secret was passed to this step."
-              echo "Secret is configured: $([ -n "$DEMO_SECRET" ] && echo "yes" || echo "no")"
+  deploy-job:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read environment secret
+        env:
+          DEPLOY_MESSAGE: ${{ secrets.DEPLOY_MESSAGE }}
+        run: |
+          echo "Production environment is selected."
+          if [ -n "$DEPLOY_MESSAGE" ]; then
+            echo "Environment secret is configured: yes"
+          else
+            echo "Environment secret is configured: no"
+          fi
