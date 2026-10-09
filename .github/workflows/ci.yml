@@ -40,7 +40,6 @@ jobs:
 
     permissions:
       contents: read
-      issues: write
       deployments: write
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
@@ -56,5 +55,6 @@ jobs:
             /repos/${{ github.repository }}/deployments \
             -f ref=main \
             -f environment=production \
-            -f description="Job-level permission test deployment"   
+            -f description="Job-level permission test deployment" \
+            -F auto_merge=false \
            
