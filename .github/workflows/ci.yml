@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
        contents: read
+       issues: write
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,11 +29,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-         count=$(gh api "repos/${{ github.repository }}/issues?state=open" \
+         count=$(gh api "repos/${{ github.repository }}/issues?state=open&labels=bug" \
           --jq '[.[] | select(.pull_request == null)] | length')
          echo "Number of open issues: $count"
-            if [ $count -gt 0 ]; then
-              echo "There are open issues in the repository."
+            if [ $count -eq 0 ]; then
+              gh api \
+                 --method POST \
+                -f title="automated bug report" \
+                -f body="created by github action because there is no open bug report" \
+                -f 'labels[]=bug'
             else
-              echo "No open issues found."
+              echo "An open bug report already exists."
             fi
