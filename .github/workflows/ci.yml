@@ -1,4 +1,5 @@
-name: Environment Secret Demo
+
+name: GitHub OIDC AWS Demo
 
 on:
   push:
@@ -7,9 +8,10 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
-  deploy-job:
+  test-aws-connection:
     runs-on: ubuntu-latest
     environment: production
 
@@ -17,13 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Read environment secret
-        env:
-          DEPLOY_MESSAGE: ${{ secrets.DEPLOY_MESSAGE }}
-        run: |
-          echo "Production environment is selected."
-          if [ -n "$DEPLOY_MESSAGE" ]; then
-            echo "Environment secret is configured: yes"
-          else
-            echo "Environment secret is configured: no"
-          fi
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::774305581314:role/GitHubActionsOIDCRole
+          aws-region: ap-south-1
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
