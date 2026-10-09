@@ -5,8 +5,7 @@ on:
 
 permissions:
   contents: read
-  issues: write
-
+  
 jobs:
   permission-demo:
     runs-on: ubuntu-latest
