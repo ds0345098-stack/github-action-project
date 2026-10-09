@@ -45,6 +45,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
       - name: Create a deployment
         env:
           GH_TOKEN: ${{ github.token }}
@@ -52,10 +53,13 @@ jobs:
           gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/deployments \
-            -f ref=main \
-            -f environment=production \
-            -f description="Job-level permission test deployment" \
-            -F auto_merge=false \
-            -F 'required_contexts=[]'
-           
+            "/repos/${{ github.repository }}/deployments" \
+            --input - <<'JSON'
+          {
+            "ref": "main",
+            "environment": "production",
+            "description": "Job-level permission test deployment",
+            "auto_merge": false,
+            "required_contexts": []
+          }
+          JSON
