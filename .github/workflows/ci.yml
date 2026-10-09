@@ -28,7 +28,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
          count=$(gh api "repos/${{ github.repository }}/issues?state=open" \
-          --jq '[.[] | select(pull_request ==null)] | length')
+          --jq '[.[] | select(pull_request == null)] | length')
          echo "Number of open issues: $count"
             if [ $count -gt 0 ]; then
               echo "There are open issues in the repository."
