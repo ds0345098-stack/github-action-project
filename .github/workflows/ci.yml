@@ -32,9 +32,11 @@ jobs:
          count=$(gh api "repos/${{ github.repository }}/issues?state=open&labels=bug" \
           --jq '[.[] | select(.pull_request == null)] | length')
          echo "Number of open issues: $count"
-            if [ $count -eq 0 ]; then
+            if [ "$count" -eq 0 ]; then
               gh api \
+                
                  --method POST \
+                 "repos/${{ github.repository }}/issues" \
                 -f title="automated bug report" \
                 -f body="created by github action because there is no open bug report" \
                 -f 'labels[]=bug'
