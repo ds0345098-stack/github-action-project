@@ -28,6 +28,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-         gh api "repos/${{ github.repository }}/issues?state=open"
-          --jq '.[] .title'
+         gh api "repos/${{ github.repository }}/issues?state=open" \
+          --jq '.[].title'
         
