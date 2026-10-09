@@ -20,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
        contents: read
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,6 +27,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-         gh api "repos/${{ github.repository }}/issues?state=open" \
-          --jq '.[].title'
-        
+         count=$(gh api "repos/${{ github.repository }}/issues?state=open" \
+          --jq '[ .[] | select(pull_request ==null) ] | length')
+         echo "Number of open issues: $count"
+            if [ $count -gt 0 ]; then
+              echo "There are open issues in the repository."
+            else
+              echo "No open issues found."
+            fi
