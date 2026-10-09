@@ -1,37 +1,20 @@
-
-name: GitHub OIDC AWS Demo
-
+name: demo outputs
 on:
   push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  id-token: write
 
 jobs:
-  test-aws-connection:
+  get_info:
     runs-on: ubuntu-latest
-    environment: production
-
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - id: get_version
+        run: echo "version=1.2.3" >> "$GITHUB_OUTPUT"
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6.3.0
-        with:
-          role-to-assume: arn:aws:iam::774305581314:role/GitHubActionsOIDCRole
-          aws-region: ap-south-1
-
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
-      - name: List S3 buckets
-        run: aws s3api list-buckets --query "Buckets[].Name" --output table
-        
-      - name: Test restricted S3 access
-        run: |
-          aws s3api list-objects-v2 \
-            --bucket githubdemobucket1 \
-            --max-keys 5
+  print_info:
+    runs-on: ubuntu-latest
+    needs: get_info
+    steps:
+      - name: Print version
+        run: echo "Version from previous job:${{ needs.get_info.outputs.version }}"      
+    
