@@ -24,6 +24,8 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Create an issue
         env:
           GH_TOKEN: ${{ github.token }}
