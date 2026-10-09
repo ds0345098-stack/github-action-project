@@ -29,3 +29,9 @@ jobs:
         run: aws sts get-caller-identity
       - name: List S3 buckets
         run: aws s3api list-buckets --query "Buckets[].Name" --output table
+        
+      - name: Test restricted S3 access
+        run: |
+          aws s3api list-objects-v2 \
+            --bucket githubdemobucket1 \
+            --max-keys 5
