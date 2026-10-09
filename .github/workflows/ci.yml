@@ -1,23 +1,33 @@
-name: GITHUB_TOKEN Permissions Demo
+name: Permission Scope Demo
 
 on:
   push:
 
 permissions:
   contents: read
-  
+
 jobs:
-  permission-demo:
+  read-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read repository
+        uses: actions/checkout@v4
+
+      - name: Show read job
+        run: echo "Read job succeeded"
+
+  issue-job:
     runs-on: ubuntu-latest
 
-    steps:
+    permissions:
+      contents: read
+      issues: write
 
-      - name: Checkout code
-        uses: actions/checkout@v4
+    steps:
       - name: Create an issue
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create \
-            --title "Issue created by GitHub Actions" \
-            --body "This issue was created by GITHUB_TOKEN."
+            --title "Job-level permission test" \
+            --body "This issue tests job-level permissions."
