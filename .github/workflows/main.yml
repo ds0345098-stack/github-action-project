@@ -1,15 +1,21 @@
 
-name: Main Deployment Workflow
+name: Job Artifacts Demo
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  deploy-prod:
-    uses: ./.github/workflows/reusableworkflow.yml
-    with:
-      environment: prod
+  build:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Create a report
+        run: |
+          mkdir -p reports
+          echo "Build completed successfully!" > reports/report.txt
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: reports/report.txt
