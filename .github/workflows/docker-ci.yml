@@ -1,0 +1,59 @@
+
+name: Docker CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Run unit tests
+        working-directory: docker-demo
+        run: python -m unittest discover -s tests -v
+
+      - name: Build Docker image
+        run: docker build -t python-docker-demo:${{ github.sha }} ./docker-demo
+
+      - name: Start Docker container
+        run: docker run -d --name python-docker-demo -p 127.0.0.1:8080:8000 python-docker-demo:${{ github.sha }}
+
+      - name: Test running container
+        run: |
+          for attempt in $(seq 1 10); do
+            if curl -fsS http://127.0.0.1:8080/health >/dev/null 2>&1; then
+              break
+            fi
+
+            if [ "$attempt" -eq 10 ]; then
+              docker logs python-docker-demo
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          test "$(curl -fsS http://127.0.0.1:8080/health)" = "OK"
+          test "$(curl -fsS http://127.0.0.1:8080/)" = "Hello from Docker + GitHub Actions!"
+
+          echo "Docker container test passed!"
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f python-docker-demo || true
